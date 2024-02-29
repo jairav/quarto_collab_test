@@ -1,0 +1,24 @@
+---
+title: "test_quarto_r_python"
+author: "jairav desai"
+format: html
+editor: visual
+---
+
+## Quarto
+
+preamble text.
+
+## R
+
+```{r}
+#| echo: true
+1 + 1
+```
+
+## Python
+
+```{python}
+#| echo: true
+2 * 2
+```
