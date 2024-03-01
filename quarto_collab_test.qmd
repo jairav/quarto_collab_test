@@ -3,22 +3,132 @@ title: "test_quarto_r_python"
 author: "jairav desai"
 format: html
 editor: visual
+server: shiny
 ---
 
 ## Quarto
 
-preamble text.
+Quarto be at miss or each good play home they. It leave taste mr in it fancy. She son lose does fond bred gave lady get. Sir her company conduct expense bed any. Sister depend change off piqued one. Contented continued any happiness instantly objection yet her allowance. Use correct day new brought tedious. By come this been in. Kept easy or sons my it done.
+
+This is the repo issues page: [https://github.com/jairav/quarto_collab_test/issues](https://github.com/jairav/quarto_collab_test)
 
 ## R
 
-```{r}
+R code perhaps chamber his six detract besides add. Moonlight newspaper up he it enjoyment agreeable depending.
+
+```{r include=FALSE}
 #| echo: true
+library(shiny)
+library(DT)
+library(httr)
+library(jsonlite)
+
 1 + 1
 ```
 
-## Python
+::: {.callout-caution collapse="true"}
+## Reviewer Comments
+
+```{r}
+fluidPage(
+  # DataTable Output
+  div(style = "display: flex; align-items: center;",
+      div(style = "flex-grow: 1; margin-right: 5px; align-self: center;",
+          textInput(inputId = "newComment", label = "", placeholder = "Type your comment here...", width = "100%")
+      ),
+      div(style = "flex-shrink: 0; align-self: center;",
+          actionButton(inputId = "Submit", label = "Submit",  icon = icon("github"))
+      )
+  ),
+  hr(),
+  div(DT::dataTableOutput("commentsTable"), style = "width: 100%")
+)
+```
+
+```{r include=FALSE}
+#| context: server
+#| echo: false
+
+library(httr)
+library(jsonlite)
+library(DT)
+
+# Set your GitHub Personal Access Token and Repository
+token <- Sys.getenv("GITHUB_PAT")
+repo <- "jairav/quarto_collab_test"
+
+# Function to Fetch Issues from GitHub API
+fetch_issues <- function(repo, token) {
+  url <- paste0("https://api.github.com/repos/", repo, "/issues")
+  response <- GET(url, add_headers(Authorization = paste0("token ", token)))
+  issues <- fromJSON(content(response, "text"), flatten = TRUE)
+
+  issues_df <- data.frame(
+    Title = issues$title,
+    Description = issues$body,
+    Github = issues$url
+  )
+  return(issues_df)
+}
+
+# Function to Create an Issue on GitHub
+create_issue <- function(repo, token, comment_text) {
+  title = substr(comment_text, 1, 20)
+  body = comment_text
+  url <- paste0("https://api.github.com/repos/", repo, "/issues")
+  issue_data <- list(title = title, body = body, labels = list("comment"))
+  json_data <- toJSON(issue_data, auto_unbox = TRUE)
+  response <- POST(url, body = json_data, add_headers(Authorization = paste0("token ", token), `Content-Type` = "application/json"))
+  created_issue <- fromJSON(content(response, "text"), flatten = TRUE)
+  return(created_issue)
+}
+
+# Render DataTable
+observeEvent(input$Submit, {
+  # Call create_issue function
+  create_issue(repo, token, input$newComment)
+  # Refresh the DataTable
+  output$commentsTable <- DT::renderDataTable({
+    fetch_issues(repo, token)
+  })
+  updateTextInput(session, "newComment", value = "")
+})
+output$commentsTable <- DT::renderDataTable({
+  existingComments <- fetch_issues(repo, token)
+  existingComments$Github <- paste0('<a href="', existingComments$Github, '" target="_blank">Link</a>')
+  datatable(existingComments,
+            escape = FALSE,
+            extensions = 'Scroller',
+            options = list(
+              deferRender = TRUE,
+              scrollY = 200,
+              scroller = TRUE,
+              dom = 'tr',
+              columnDefs = list(list(width = '40%', targets = c(1,2)))              ),
+            caption = htmltools::tags$caption(
+              style = 'caption-side: bottom; text-align: center;',
+              htmltools::em('List of existing Github Issues.')
+            ),
+            filter = 'top'
+  )
+})
+```
+:::
+
+## Python Section
+
+This is the python section. Moreover mistaken kindness me feelings do be marianne. Son over own nay with tell they cold upon are. Cordial village and settled she ability law herself. Finished why bringing but sir bachelor unpacked any thoughts. Unpleasing unsatiable particular inquietude did nor sir.
 
 ```{python}
 #| echo: true
 2 * 2
 ```
+
+::: {.callout-caution collapse="true"}
+## Reviewer Comments
+
+```{r}
+#library(shiny)
+#shiny::runGitHub("shiny-examples", "rstudio", subdir = "001-hello")
+```
+:::

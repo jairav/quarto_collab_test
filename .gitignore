@@ -1,3 +1,8 @@
+.DS_Store
+
+quarto_collab_test_files/
+quarto_collab_test.html
+
 # History files
 .Rhistory
 .Rapp.history
