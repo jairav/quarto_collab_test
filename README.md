@@ -1,8 +1,7 @@
 # quarto_collab_test
 testing various collab tools
 
-'''python
-
+```python
 def map_spec(a: mx.array):
     return a + 10
 
@@ -34,4 +33,15 @@ problem = MetalProblem(
     spec=map_spec
 )
 problem.show()
-'''
+```
+
+
+now try R
+```R
+library(shiny) 
+a <-10
+```
+
+what else? bash? C? 
+
+
